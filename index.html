@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>なんか掲示板</title>
+</head>
+<body>
+    <h1>Google Sheets 掲示板</h1>
+    <input id="name" placeholder="名前">
+    <textarea id="message" placeholder="メッセージ"></textarea>
+    <button onclick="postMessage()">投稿</button>
+    <div id="messages"></div>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbyzyFCqyA4E37CF5T8y6yJL0xunIXdUqZ6J4pQ_U59-s8t6nUjd_MOpwerYw-rLw1c/exec"; // a
+
+        async function postMessage() {
+            const name = document.getElementById("name").value;
+            const message = document.getElementById("message").value;
+
+            await fetch(API_URL, {
+                method: "POST",
+                body: JSON.stringify({ name, message }),
+                headers: { "Content-Type": "application/json" }
+            });
+
+            loadMessages();
+        }
+
+        async function loadMessages() {
+            const response = await fetch(API_URL);
+            const messages = await response.json();
+
+            document.getElementById("messages").innerHTML = messages
+                .map(msg => `<p><strong>${msg.name}</strong>: ${msg.message} (${msg.timestamp})</p>`)
+                .join("");
+        }
+
+        loadMessages();
+    </script>
+</body>
+</html>
